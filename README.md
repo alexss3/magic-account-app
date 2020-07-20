@@ -64,3 +64,39 @@ promotion money, multiplied amount and deposited amount, such that I know what I
 available for spending or payout.
 
 ## Test Cases
+
+### Account
+
+1. A user loads their dashboard. Expect: Values for deposited balance, balance after multiplier, and promo balance should be shown.
+
+### Deposits
+
+1. A user tries to deposit more than the maximum account balance setting. Expect: Error
+2. A user tries to deposit more than the maximum daily deposit limit in one day. Expect: Error
+3. A user tries to deposit an amount within the daily limit and below the maximum allowed. Expect: a success message and updated balance.
+
+### Payments
+
+1. A user makes a payment at 01:00. Expect: Payment denied since it outside of allowed hours.
+2. A user makes a payment at 23:30. Expect: Payment processed so long as funds are available.
+3. A user makes a payment of 50kr with a promo balance of 100kr. Expect: 50kr is subtracted from promo balance but not from deposited balance.
+4. A user makes a payment of 200kr with a promo balance of 100kr and deposit balance of 100kr. Expect: Promo balance becomes 0, only 33kr subtracted from deposit balance (100 / 3x = 33kr).
+5. A user tries to make a payment of 300kr with a deposit balance of 50kr. Expect: Error since available funds is only 150kr (50 * 3x).
+
+### Withdraws
+
+1. A user tries to withdraw 100kr when the available funds shows 200kr. Expect: Error since deposit balance is only 66kr (66 * 3x = ~200). Can only withdraw what was deposited.
+2. A user tries to withdraw 50kr when the available funds shows 150kr. Expect: Success (50kr * 3x = 150). Deposit balance and available funds will be 0.
+
+### Promotions
+
+1. An admin user adds a promotion for 100kr. Expect: A record is stored for the promotion and all accounts receive the 100kr in their promo balance.
+
+### Settings
+
+1. An admin user updates the multiplier to 2x instead of 3x. Expect: setting updated, all magic accounts show available funds using the new multiplier.
+2. An admin user tries to set the multiplier to 0. Expect: the multiplier will be set to 1x as a fail safe.
+
+## Design Challenges/Concerns
+
+Deposits should have the multiplier stored in the record.  If the multiplier changes, only new deposits should use the new multiplier.
