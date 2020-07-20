@@ -97,6 +97,9 @@ available for spending or payout.
 1. An admin user updates the multiplier to 2x instead of 3x. Expect: setting updated, all magic accounts show available funds using the new multiplier.
 2. An admin user tries to set the multiplier to 0. Expect: the multiplier will be set to 1x as a fail safe.
 
-## Design Challenges/Concerns
+## Design Challenges/Limitations
 
 Deposits should have the multiplier stored in the record.  If the multiplier changes, only new deposits should use the new multiplier.
+
+Promo money should be handled better. For example, when a promo expires, the money should not be available to spend.
+Ideally, a promo is attached to a specific vendor (bar, club, etc.), and when a user attempts to make a payment at said vendor, it will subtract the promo money first.
